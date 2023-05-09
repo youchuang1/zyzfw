@@ -82,10 +82,8 @@ class SysView(BaseView):
             return render(request, 'login.html')
         elif module == 'register':  # 注册页面
             return render(request, 'register.html')
-        elif module == 'indexs':
-            return render(request, 'indexs.html')
-        elif module == 'indexss':
-            return render(request, 'indexss.html')
+        elif module == 'index':
+            return render(request, 'index.html')
         elif module == 'info':  # 用户信息页面
             return SysView.getInfo(request)
         elif module == 'sysnums':  # 系统类容页面
