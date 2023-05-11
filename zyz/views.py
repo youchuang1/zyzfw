@@ -1,7 +1,9 @@
+from django.core.paginator import Paginator # 导入分页模块
 from django.shortcuts import render  # 导入渲染模块
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse  # 导入http响应模块
 from .models import *  # 导入数据库模型
 from django.views import View # 导入视图模块
+from django.db.models import Q # 导入查询模块
 
 # Create your views here.
 
@@ -24,16 +26,10 @@ class BaseView(View):
     转换分页查询信息
     '''
 
-    def parasePage(pageIndex, pageSize, pageTotal, count, data):
+    def parasePage(data, count, pageIndex, pageSize, isPage):
+        resl = {'data': data, 'count': count, 'pageIndex': pageIndex, 'pageSize': pageSize, 'isPage':isPage}  # 数据 总数  当前页  总页数
+        return JsonResponse(resl)
 
-        return {'pageIndex': pageIndex, 'pageSize': pageSize, 'pageTotal': pageTotal, 'count': count, 'data': data}
-
-    '''
-    转换分页查询信息
-    '''
-
-    def parasePage(pageIndex, pageSize, pageTotal, count, data):
-        return {'pageIndex': pageIndex, 'pageSize': pageSize, 'pageTotal': pageTotal, 'count': count, 'data': data}
 
     '''
     成功响应信息
@@ -72,18 +68,17 @@ class BaseView(View):
 系统请求处理
 '''
 
-
 class SysView(BaseView):
 
     def get(self, request, module, *args, **kwargs):
         if module == 'index':  # 首页
             return render(request, 'index.html')
-        elif module == 'login':  # 登录页面
-            return render(request, 'login.html')
-        elif module == 'register':  # 注册页面
-            return render(request, 'register.html')
-        elif module == 'index':
-            return render(request, 'index.html')
+        elif module == 'dashboard':
+            return render(request, 'dashboard.html')
+        elif module == 'test':
+            return render(request, 'test.html')
+        elif module == 'user_list':
+            return SysView.user_list(request)
         elif module == 'info':  # 用户信息页面
             return SysView.getInfo(request)
         elif module == 'sysnums':  # 系统类容页面
@@ -93,8 +88,9 @@ class SysView(BaseView):
             del request.session["id"]  # 删除session
             del request.session["role"]  # 删除session
 
-            return HttpResponseRedirect('/jobs/index')  # 重定向到登录页面
-
+            return HttpResponseRedirect('/jobs/index/')  # 重定向到登录页面
+        else:
+            return self.error()
     def post(self, request, module, *args, **kwargs):
 
         if module == 'login':  # 登录
@@ -108,7 +104,29 @@ class SysView(BaseView):
             return SysView.updSessionPwd(request)
         elif module == 'register':  # 注册
             return SysView.register(request)
+        else:
+            return self.error()
 
+    def user_list(request):
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)  #
+        name = request.GET.get('query')
+        print(name)
+
+        qry = Q()
+        if BaseView.isExit(name):
+            qry = qry & Q(name__icontains=name)
+        print(qry)
+        users = User.objects.filter(qry).order_by('create_time')  # 添加 order_by 以对查询结果排序
+        paginator = Paginator(users, per_page)  # 分页
+        results = []
+        for user in paginator.page(page):
+            results.append({
+                'id': user.id,
+                'name': user.name,
+                'email': user.email
+            })
+        return SysView.parasePage(results, users.count(), page, per_page, paginator.num_pages > int(page)) # 数据 总数  当前页  总页数 是否有下一页
     def login(request):
         phone = request.POST.get('phone')  # 获取用户手机号
         password = request.POST.get('password')  # 获取用户密码
@@ -203,7 +221,6 @@ class SysView(BaseView):
 志愿者相关操作
 '''
 
-
 class VolunteersView(BaseView):
 
     def get(self, request, module, *args, **kwargs):
@@ -225,16 +242,93 @@ class VolunteersView(BaseView):
 
 
 '''
-志愿者管理员
+活动相关操作
+'''
+
+class Activitys(BaseView):
+
+    def get(self, request, module, *args, **kwargs):
+
+        if module == 'showadd':
+            return render(request, 'add_activity.html')
+        elif module == 'showmgt':
+            return render(request, 'mgt_activity.html')
+        elif module == 'page':
+            return self.getPageInfo(request)
+        else:
+            return self.error()
+
+    def post(self, request, module, *args, **kwargs):
+        if module == 'add':
+            return self.addInfo(request)
+        elif module == 'upd':
+            return self.updInfo(request)
+        elif module == 'del':
+            return self.delInfo(request)
+        else:
+            return self.error()
+
+    def getPageInfo(request):
+
+        page = request.POST.get('page')
+        per_page = request.POST.get('per_page')
+        name = request.POST.get('name')
+        status = request.POST.get('status')
+        qry = Q()
+        if name != '':
+            qry = qry & Q(name__icontains=name)
+        if status != '':
+            qry = qry & Q(status=status)
+        print(qry)
+        activitys = Activity.objects.filter(qry).order_by('create_time')
+        total = activitys.count()
+        activitys = activitys[(int(page) - 1) * int(per_page):int(page) * int(per_page)]
+        resl = {
+            'total': total,
+            'data': list(activitys.values()),
+        }
+        return BaseView.successData(resl)
+
+'''
+视频相关操作
+'''
+
+class Videos(BaseView):
+
+    def get(self, request, module, *args, **kwargs):
+
+        if module == 'showadd':
+            return render(request, 'add_video.html')
+        elif module == 'showmgt':
+            return render(request, 'mgt_video.html')
+        elif module == 'page':
+            return self.getPageInfo(request)
+        else:
+            return self.error()
+
+    def post(self, request, module, *args, **kwargs):
+        if module == 'add':
+            return self.addInfo(request)
+        elif module == 'upd':
+            return self.updInfo(request)
+        elif module == 'del':
+            return self.delInfo(request)
+        else:
+            return self.error()
+
+    def getPageInfo(request):
+        pass
+'''
+问题答复相关
 '''
 
 
-class VolunteerAdminsView(BaseView):
+class Problem(BaseView):
 
     def get(self, request, module, *args, **kwargs):
 
         if module == 'show':
-            return render(request, 'users.html')
+            return render(request, 'problem.html')
         elif module == 'info':
             return self.getInfo(request)
         elif module == 'page':
@@ -254,69 +348,7 @@ class VolunteerAdminsView(BaseView):
 
 
 '''
-资源管理员
-'''
 
-
-class ResourceAdminsView(BaseView):
-
-    def get(self, request, module, *args, **kwargs):
-
-        if module == 'show':
-
-            colleges = models.Colleges.objects.all().values()
-            majors = models.Majors.objects.all().values()
-
-            return render(request, 'students.html', {'colleges': list(colleges), 'majors': list(majors)})
-        elif module == 'info':
-            return self.getInfo(request)
-        elif module == 'page':
-            return self.getPageInfo(request)
-        else:
-            return self.error()
-
-    def post(self, request, module, *args, **kwargs):
-        if module == 'add':
-            return self.addInfo(request)
-        elif module == 'upd':
-            return self.updInfo(request)
-        elif module == 'del':
-            return self.delInfo(request)
-        else:
-            return self.error()
-
-
-'''
-答复管理员
-'''
-
-
-class AnswerAdminsView(BaseView):
-
-    def get(self, request, module, *args, **kwargs):
-
-        if module == 'show':
-            return render(request, 'educationLogs.html')
-        elif module == 'info':
-            return self.getInfo(request)
-        elif module == 'page':
-            return self.getPageInfo(request)
-        else:
-            return self.error()
-
-    def post(self, request, module, *args, **kwargs):
-        if module == 'add':
-            return self.addInfo(request)
-        elif module == 'upd':
-            return self.updInfo(request)
-        elif module == 'del':
-            return self.delInfo(request)
-        else:
-            return self.error()
-
-
-'''
-游客相关操作
 '''
 
 
@@ -345,7 +377,7 @@ class GuestsView(BaseView):
 
 
 '''
-超级管理员
+
 '''
 
 

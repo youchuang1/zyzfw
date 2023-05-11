@@ -2,32 +2,158 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% include 'mb/head.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static '/img/001.ico' %}" type="image/x-icon">
+    <script src="{% static '/plugins/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static '/js/index.js' %}"></script>
+    <link rel="stylesheet" href="{% static '/css/index.css' %}">
+    <title>首页</title>
+
+</head>
 
 <body>
-<div class="container-fluid position-relative bg-white d-flex p-0">
+<!-- 导航栏 -->
+<div id="Navigation_bar">
+    <div class="Navigation_bar_dv1">
+        <ul>
+            <li>
+                <img class="logo" src="{% static '/img/育苗朝阳.png' %}">
+            </li>
+            <li>
+                <a href="/jobs/index/" style="color:#2A9EEB;">首页</a>
+            </li>
+        </ul>
 
-    <!-- 侧边栏 -->
-    {% include 'mb/menus.html' %}
-
-
-
-    <div class="content">
-        <!-- 导航栏 -->
-        {% include 'mb/nav.html' %}
-
-
-        <!-- 内容 -->
-        <iframe src="https://zyzdsj.vercel.app/" style="height: 100%;width: 100%"></iframe>
-        <!-- Footer End -->
-
-
-
-
+        <ul>
+            <li class="Login_and_registration"><a href="#" style="color: white;">登录/注册</a></li>
+        </ul>
     </div>
 </div>
 
-{% include 'mb/commjs.html' %}
+<div class="content">
+    <div class="close">X</div>
+    <div class="form-box">
+        <!-- 注册 -->
+        <div class="register-box hidden">
+            <h1>注册</h1>
+            <input class="iptext" type="email" placeholder="邮箱" id="email">
+            <input class="iptelephone" type="tel" placeholder="电话号码" id="phone_zc">
+            <input class="ippassword1" type="password" placeholder="密码" id="password_zc">
+            <input class="ippassword2" type="password" placeholder="再次输入密码" id="password2_zc">
+            <button class="bt1" id="register-btn">注册</button>
+        </div>
 
+        <!-- 登录 -->
+        <div class="login-box">
+            <h1>登录</h1>
+            <input class="ipTelephone" type="tel" placeholder="电话号码" id="phone_dl">
+            <input class="ipPassword" type="password" placeholder="密码" id="password_dl">
+            <button class="bt2" id="login-btn">登录</button>
+        </div>
+
+    </div>
+
+
+    <!-- 滑块 left-->
+    <div class="con-box left">
+        <h2>账号<span>注册</span></h2>
+        <p>开始你的<span>志愿者</span>生涯吧！</p>
+        <img src="{% static '/img/育苗朝阳.png' %}">
+        <button id="login">前往登录账号</button>
+    </div>
+
+    <!-- 滑块 right-->
+    <div class="con-box right">
+        <h2>账号<span>登录</span></h2>
+        <p>继续你的<span>志愿者</span>生涯吧！</p>
+        <img src="{% static '/img/育苗朝阳.png' %}">
+        <button id="register">前往注册账号</button>
+    </div>
+</div>
+
+<!-- 网页banner -->
+<div id="banner">
+    <img src="{% static '/img/02.jpg' %}">
+    <h1 class="texth1">育苗朝阳。</h1>
+    <h1 class="texth1">用心教育，用爱养育。</h1>
+</div>
+<!-- 重点推荐 -->
+<div id="Key_recommendation">
+    {#        <div class="Key" onclick="window.location.href='./index2.html'">#}
+    <div class="Key">
+        <ul>
+            <li><b>学习视频</b>
+                <p>这是随便一句话</p>
+            </li>
+            <li>更多了解<span> --</span></li>
+        </ul>
+        <img src="{% static '/img/育苗朝阳.png' %}">
+    </div>
+    <div class="Key">
+        <ul>
+            <li><b>查看活动</b>
+                <p>这是随便一句话</p>
+            </li>
+            <li>更多了解<span> --</span></li>
+        </ul>
+        <img src="{% static '/img/育苗朝阳.png' %}">
+    </div>
+    <div class="Key">
+        <ul>
+            <li><b>提问功能</b>
+                <p>这是随便一句话</p>
+            </li>
+            <li>视频了解<span> --</span></li>
+        </ul>
+        <img src="{% static '/img/育苗朝阳.png' %}">
+    </div>
+</div>
+
+<!-- 介绍视频 -->
+<div id="Introductory_video">
+    <div class="video_h1">
+        <h1>青年助幼志愿服务的新公益平台</h1>
+    </div>
+    <div class="video_div">
+        <video controls autoplay src="{% static '/video/pv1.mp4' %}"></video>
+    </div>
+</div>
+
+<!-- 文本介绍 -->
+<div id="Text_introduction">
+    <div class="Text_introduction_01">
+        <p>
+            育苗朝阳是由长沙幼儿师范高等专科学校教师和学生组建的一行队伍，
+            搭建青年助幼志愿服务的新公益平台，
+            突破传统的支公血限单点、个案式的服务模式，开创了一套新的全流程、全链条、全生态的社区志愿服务的工作方法，
+            通过完善的孵化体系、教学体系、课程体系和管理体系，为高校青年志愿者赋能，将青年志愿服务力量引入志愿服务需求旺盛的社区、农村，服务最需要的婴幼儿。
+        </p>
+        <p>
+            主要开展的活动内容包括:卫生保健知识、常见伤害预防与急救、生活照
+            护、早期发展支持、亲子关系、疾病防控、营养与喂养、心理健
+            康、小儿推拿等。
+        </p>
+    </div>
+    <div class="Text_introduction_02">
+        <div class="Text_02_img">
+            <img src="{% static '/img/育苗朝阳.png' %}"/>
+        </div>
+    </div>
+</div>
+<!-- 其他介绍 -->
+
+<div id="Other_introduction">
+
+</div>
+
+
+<!-- 结尾 -->
+<div id="ending">
+
+</div>
 </body>
+
 </html>
