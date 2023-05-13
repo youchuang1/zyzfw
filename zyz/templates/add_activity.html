@@ -10,23 +10,97 @@
     <!-- 侧边栏 -->
     {% include 'mb/menus.html' %}
 
-
-
     <div class="content">
         <!-- 导航栏 -->
         {% include 'mb/nav.html' %}
 
-
         <!-- 内容 -->
-
-
-
-
-
+        <h1>添加活动</h1>
+        <div class="container mt-5">
+            <div class="mb-3">
+                <label for="title" class="form-label">标题</label>
+                <input type="text" class="form-control" name="title" required id="title">
+            </div>
+            <div class="mb-3">
+                <label for="sponsor" class="form-label">主办方</label>
+                <input type="text" class="form-control" name="sponsor" required id="sponsor">
+            </div>
+            <div class="mb-3">
+                <label for="start_time" class="form-label">开始时间</label>
+                <input type="datetime-local" class="form-control" name="start_time" required id="start_time">
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">结束时间</label>
+                <input type="datetime-local" class="form-control" name="end_time" required id="end_time">
+            </div>
+            <div class="mb-3">
+                <label for="place" class="form-label">地点</label>
+                <input type="text" class="form-control" name="place" required id="place">
+            </div>
+            <div class="mb-3">
+                <label for="introduction" class="form-label">简介</label>
+                <textarea class="form-control" name="introduction" rows="3" required id="introduction"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="tag" class="form-label">标签</label>
+                <input type="text" class="form-control" name="tag" required id="tag">
+            </div>
+            <div class="mb-3">
+                <label for="score" class="form-label">积分</label>
+                <input type="number" class="form-control" name="score" required id="score">
+            </div>
+            <div class="mb-3">
+                <label for="apply_num" class="form-label">申请人数</label>
+                <input type="number" class="form-control" name="apply_num" required id="apply_num">
+            </div>
+            <div class="mb-3">
+                <label for="logo" class="form-label">活动Logo</label>
+                <input class="form-control" type="file" id="logo" name="logo">
+            </div>
+            <button type="submit" class="btn btn-primary" id="submit">发布</button>
+            <button type="reset" class="btn btn-secondary" id="reset">重置</button>
+        </div>
     </div>
 </div>
 
 {% include 'mb/commjs.html' %}
+
+<script>
+$(document).ready(function () {
+    $("#submit").click(function (event) {
+        event.preventDefault();  // Prevent the form from being submitted normally
+
+        var formData = new FormData();
+        formData.append('title', $("#title").val());
+        formData.append('sponsor', $("#sponsor").val());
+        formData.append('start_time', $("#start_time").val());
+        formData.append('end_time', $("#end_time").val());
+        formData.append('place', $("#place").val());
+        formData.append('introduction', $("#introduction").val());
+        formData.append('tag', $("#tag").val());
+        formData.append('score', $("#score").val());
+        formData.append('apply_num', $("#apply_num").val());
+        formData.append('logo', $("#logo")[0].files[0]);
+        //formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        $.ajax({
+            url: "/jobs/activity/add/",
+            type: "POST",
+            data: formData,
+            processData: false,  // Tell jQuery not to process the data
+            contentType: false,  // Tell jQuery not to set contentType
+            success: function (data) {
+                if (data.code == 0) {
+                    alert("发布成功");
+                } else {
+                    alert(data.msg);
+                }
+            }
+        });
+    });
+});
+</script>
+
 
 </body>
 </html>

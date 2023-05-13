@@ -11,22 +11,83 @@
     {% include 'mb/menus.html' %}
 
 
-
     <div class="content">
         <!-- 导航栏 -->
         {% include 'mb/nav.html' %}
 
 
         <!-- 内容 -->
-
-
-
-
-
+        <div class="container">
+            <h2>添加视频</h2>
+            <form>
+                <div class="mb-3">
+                    <label for="title" class="form-label">标题</label>
+                    <input type="text" class="form-control" id="title" placeholder="标题">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">简介</label>
+                    <textarea class="form-control" id="description" rows="3" placeholder="简介"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="tags" class="form-label">标签</label>
+                    <input type="text" class="form-control" id="tags" placeholder="标签">
+                </div>
+                <div class="mb-3">
+                    <label for="cover-image" class="form-label">视频封面</label>
+                    <input type="file" class="form-control" id="cover_image">
+                </div>
+                <div class="mb-3">
+                    <label for="points" class="form-label">积分数</label>
+                    <input type="number" class="form-control" id="points" placeholder="积分数">
+                </div>
+                <div class="mb-3">
+                    <label for="video-file" class="form-label">视频文件</label>
+                    <input type="file" class="form-control" id="video_file">
+                </div>
+                <button type="submit" class="btn btn-primary" id="submit">提交</button>
+            </form>
+        </div>
     </div>
 </div>
 
 {% include 'mb/commjs.html' %}
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function (event) {
+            event.preventDefault(); //
 
+            var formData = new FormData();
+            formData.append('title', $("#title").val());
+            formData.append('description', $("#description").val());
+            formData.append('tags', $("#tags").val());
+            formData.append('cover_image', $("#cover_image")[0].files[0]);
+            formData.append('points', $("#points").val());
+            formData.append('video_file', $("#video_file")[0].files[0]);
+            //formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: "/jobs/video/add/",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.code == 0) {
+                        alert("发布成功");
+                        //清空表单
+                        $("#title").val("");
+                        $("#description").val("");
+                        $("#tags").val("");
+                        $("#cover_image").val("");
+                        $("#points").val("");
+                        $("#video_file").val("");
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

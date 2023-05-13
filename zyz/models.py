@@ -73,7 +73,7 @@ class Video(models.Model):
     tag = models.CharField(max_length=20,verbose_name='标签')
     img_path = models.ImageField(upload_to='file/img',verbose_name='视频封面图片路径')
     score = models.IntegerField(verbose_name='积分')
-    url = models.CharField(max_length=100,verbose_name='视频url')
+    video_path = models.FileField(upload_to='file/video',verbose_name='视频路径')
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True,verbose_name='创建时间')
     class Meta:
@@ -104,6 +104,7 @@ class Question(models.Model):
     title = models.CharField(max_length=20,verbose_name='标题')
     content = models.CharField(max_length=100,verbose_name='内容')
     user_id = models.IntegerField(verbose_name='用户id')
+    status = models.IntegerField(verbose_name='状态') # 0:未回复 1:已回复
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True,verbose_name='创建时间')
     class Meta:

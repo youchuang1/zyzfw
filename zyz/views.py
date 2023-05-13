@@ -1,9 +1,14 @@
-from django.core.paginator import Paginator # 导入分页模块
+from datetime import datetime
+
+from django.core.paginator import Paginator  # 导入分页模块
+from django.db.models import Q  # 导入查询模块
+from django.http import HttpResponseRedirect, JsonResponse  # 导入http响应模块
 from django.shortcuts import render  # 导入渲染模块
-from django.http import HttpResponse, HttpResponseRedirect,JsonResponse  # 导入http响应模块
+from django.views import View  # 导入视图模块
+from django.utils import timezone  # 导入时间模块
+
 from .models import *  # 导入数据库模型
-from django.views import View # 导入视图模块
-from django.db.models import Q # 导入查询模块
+
 
 # Create your views here.
 
@@ -27,9 +32,9 @@ class BaseView(View):
     '''
 
     def parasePage(data, count, pageIndex, pageSize, isPage):
-        resl = {'data': data, 'count': count, 'pageIndex': pageIndex, 'pageSize': pageSize, 'isPage':isPage}  # 数据 总数  当前页  总页数
+        resl = {'data': data, 'count': count, 'pageIndex': pageIndex, 'pageSize': pageSize,
+                'isPage': isPage}  # 数据 总数  当前页  总页数
         return JsonResponse(resl)
-
 
     '''
     成功响应信息
@@ -59,7 +64,7 @@ class BaseView(View):
     系统异常信息
     '''
 
-    def error(data,msg='系统异常'):
+    def error(data, msg='系统异常'):
         resl = {'code': 2, 'msg': msg, 'data': data}
         return JsonResponse(resl)
 
@@ -67,6 +72,7 @@ class BaseView(View):
 '''
 系统请求处理
 '''
+
 
 class SysView(BaseView):
 
@@ -91,6 +97,7 @@ class SysView(BaseView):
             return HttpResponseRedirect('/jobs/index/')  # 重定向到登录页面
         else:
             return self.error()
+
     def post(self, request, module, *args, **kwargs):
 
         if module == 'login':  # 登录
@@ -126,7 +133,9 @@ class SysView(BaseView):
                 'name': user.name,
                 'email': user.email
             })
-        return SysView.parasePage(results, users.count(), page, per_page, paginator.num_pages > int(page)) # 数据 总数  当前页  总页数 是否有下一页
+        return SysView.parasePage(results, users.count(), page, per_page,
+                                  paginator.num_pages > int(page))  # 数据 总数  当前页  总页数 是否有下一页
+
     def login(request):
         phone = request.POST.get('phone')  # 获取用户手机号
         password = request.POST.get('password')  # 获取用户密码
@@ -152,16 +161,16 @@ class SysView(BaseView):
         datas = {}
         for item in data:
             datas = {
-                "name": item.name, # 姓名
-                "phone": item.phone, # 手机号
-                "email": item.email, # 邮箱
-                "password": item.password, # 密码
-                "area": item.area, # 地区
-                "school": item.school, # 学校
-                "major": item.major, # 专业
-                "role": item.role, # 用户类型
-                "score": item.score, # 积分
-                "level": item.level, # 等级
+                "name": item.name,  # 姓名
+                "phone": item.phone,  # 手机号
+                "email": item.email,  # 邮箱
+                "password": item.password,  # 密码
+                "area": item.area,  # 地区
+                "school": item.school,  # 学校
+                "major": item.major,  # 专业
+                "role": item.role,  # 用户类型
+                "score": item.score,  # 积分
+                "level": item.level,  # 等级
             }
 
         return SysView.successData(datas)
@@ -169,7 +178,7 @@ class SysView(BaseView):
     def getSysNums(request):
 
         resl = {
-            'sp':Video.objects.filter(status=1).count(),
+            'sp': Video.objects.filter(status=1).count(),
         }
 
         return BaseView.successData(resl)
@@ -179,11 +188,11 @@ class SysView(BaseView):
         user = request.session.get('id')
 
         User.objects.filter(id=user).update(
-            area = request.POST.get('area'),  # 地区
-            school = request.POST.get('school'),  # 学校
-            major = request.POST.get('major'),  # 专业
-            name = request.POST.get('name'),  # 姓名
-            email = request.POST.get('email'),  # 邮箱
+            area=request.POST.get('area'),  # 地区
+            school=request.POST.get('school'),  # 学校
+            major=request.POST.get('major'),  # 专业
+            name=request.POST.get('name'),  # 姓名
+            email=request.POST.get('email'),  # 邮箱
         )
         return SysView.success()
 
@@ -221,6 +230,7 @@ class SysView(BaseView):
 志愿者相关操作
 '''
 
+
 class VolunteersView(BaseView):
 
     def get(self, request, module, *args, **kwargs):
@@ -245,6 +255,7 @@ class VolunteersView(BaseView):
 活动相关操作
 '''
 
+
 class Activitys(BaseView):
 
     def get(self, request, module, *args, **kwargs):
@@ -252,7 +263,8 @@ class Activitys(BaseView):
         if module == 'showadd':
             return render(request, 'add_activity.html')
         elif module == 'showmgt':
-            return render(request, 'mgt_activity.html')
+            activities = Activity.objects.all()
+            return render(request, 'mgt_activity.html', {'activities': activities})
         elif module == 'page':
             return self.getPageInfo(request)
         else:
@@ -260,13 +272,47 @@ class Activitys(BaseView):
 
     def post(self, request, module, *args, **kwargs):
         if module == 'add':
-            return self.addInfo(request)
+            return Activitys.addInfo(request)
         elif module == 'upd':
             return self.updInfo(request)
         elif module == 'del':
             return self.delInfo(request)
         else:
             return self.error()
+
+    def addInfo(request):
+        title = request.POST.get('title')
+        sponsor = request.POST.get('sponsor')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        start_time = timezone.make_aware(datetime.fromisoformat(start_time))
+        end_time = timezone.make_aware(datetime.fromisoformat(end_time))
+        place = request.POST.get('place')
+        introduction = request.POST.get('introduction')
+        tag = request.POST.get('tag')
+        score = int(request.POST.get('score'))
+        apply_num = int(request.POST.get('apply_num'))
+        img_path = request.FILES.get('logo') # 获取图片
+        if not all([title, sponsor, start_time, end_time, place, introduction, tag, score, apply_num, img_path]):
+            return SysView.error('数据不能为空')
+        try:
+            Activity.objects.create(
+                title=title,
+                sponsor=sponsor,
+                start_time=start_time,
+                end_time=end_time,
+                place=place,
+                introduction=introduction,
+                tag=tag,
+                score=score,
+                apply_num=apply_num,
+                img_path=img_path,
+                status=1,
+                applied_num=0,
+            )
+        except IndexError:
+            return SysView.error('添加失败')
+        return SysView.success()
 
     def getPageInfo(request):
 
@@ -289,9 +335,11 @@ class Activitys(BaseView):
         }
         return BaseView.successData(resl)
 
+
 '''
 视频相关操作
 '''
+
 
 class Videos(BaseView):
 
@@ -308,7 +356,7 @@ class Videos(BaseView):
 
     def post(self, request, module, *args, **kwargs):
         if module == 'add':
-            return self.addInfo(request)
+            return Videos.addInfo(request)
         elif module == 'upd':
             return self.updInfo(request)
         elif module == 'del':
@@ -318,6 +366,29 @@ class Videos(BaseView):
 
     def getPageInfo(request):
         pass
+
+    def addInfo(request):
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        tags = request.POST.get('tags')
+        cover_image = request.FILES.get('cover_image')
+        points = request.POST.get('points')
+        video_file = request.FILES.get('video_file')
+
+        if not all([title, description, tags, cover_image, points, video_file]):
+            return SysView.error('数据不能为空')
+        try:
+            Video.objects.create(
+                title=title,
+                introduction=description,
+                tag=tags,
+                img_path=cover_image,
+                score=points,
+                video_path=video_file,
+            )
+        except IndexError:
+            return SysView.error('添加失败')
+        return SysView.success()
 '''
 问题答复相关
 '''
@@ -357,7 +428,7 @@ class GuestsView(BaseView):
     def get(self, request, module, *args, **kwargs):
 
         if module == 'show':
-            return render(request, 'projectLogs.html')
+            return render(request, 'guests.html')
         elif module == 'info':
             return self.getInfo(request)
         elif module == 'page':
