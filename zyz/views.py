@@ -350,7 +350,7 @@ class Videos(BaseView):
         elif module == 'showmgt':
             return render(request, 'mgt_video.html')
         elif module == 'page':
-            return self.getPageInfo(request)
+            return Videos.getPageInfo(request)
         else:
             return self.error()
 
@@ -358,14 +358,36 @@ class Videos(BaseView):
         if module == 'add':
             return Videos.addInfo(request)
         elif module == 'upd':
-            return self.updInfo(request)
+            return Videos.updInfo(request)
         elif module == 'del':
             return self.delInfo(request)
         else:
             return self.error()
 
     def getPageInfo(request):
-        pass
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)  #
+        name = request.GET.get('query')
+
+        qry = Q()
+
+        if BaseView.isExit(name):
+            qry = qry & Q(name__icontains=name)
+
+        title = Video.objects.filter(qry).order_by('create_time')  # 添加 order_by 以对查询结果排序
+        paginator = Paginator(title, per_page)  # 分页
+        results = []
+        for i in paginator.page(page):
+            results.append({
+                'id': i.id,
+                'title': i.title,
+                'introduction': i.introduction,
+                'tag': i.tag,
+                'score': i.score,
+                'create_time': i.create_time,
+            })
+        return SysView.parasePage(results, title.count(), page, per_page,
+                                  paginator.num_pages > int(page))  # 数据 总数  当前页  总页数 是否有下一页
 
     def addInfo(request):
         title = request.POST.get('title')
