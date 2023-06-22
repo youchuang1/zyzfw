@@ -1,17 +1,16 @@
 $(document).ready(function () {
-    var Page = 1;
-    let userList = $('#user-list');
-    const perPage = 10;
+    var Page = 1;  // 当前页数
+    let userList = $('#user-list');  // 用户列表
+    const perPage = 10;  // 每页显示的用户数
     // 默认加载第一页
     loadUsers();
 
     function loadUsers(query = '') {
         $.ajax({
-            url: '/jobs/user_list/',
+            url: '/jobs/volunteers/page/',
             data: {page: Page, per_page: perPage, query: query},
             dataType: 'json',  // 返回的数据类型
             success: function (response) {
-
                 console.log(response);
                 response.data.forEach(function (user) { // 遍历每个用户
 

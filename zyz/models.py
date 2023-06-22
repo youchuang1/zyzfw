@@ -15,7 +15,7 @@ class User(models.Model):
     area = models.CharField(max_length=40,verbose_name='地区')
     school = models.CharField(max_length=40,verbose_name='学校')
     major = models.CharField(max_length=20,verbose_name='专业')
-    role = models.IntegerField(default=0,verbose_name='角色')
+    role = models.IntegerField(default=0,verbose_name='角色') # 0:普通用户 1:志愿者 2:管理员
     score = models.IntegerField(default=0,verbose_name='积分')
     level = models.IntegerField(default=0,verbose_name='等级')
     create_time = models.DateTimeField(auto_now_add=True,verbose_name='创建时间')

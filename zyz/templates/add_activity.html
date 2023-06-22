@@ -81,7 +81,6 @@ $(document).ready(function () {
         formData.append('score', $("#score").val());
         formData.append('apply_num', $("#apply_num").val());
         formData.append('logo', $("#logo")[0].files[0]);
-        //formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
         $.ajax({
             url: "/jobs/activity/add/",

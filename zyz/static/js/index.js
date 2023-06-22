@@ -157,7 +157,8 @@ $(document).on("click", "#login-btn", function () {
             if (data.code === 0) {
                 window.location.href = "/jobs/dashboard/";
             } else {
-                $("#error-message").show();
+                // $("#error-message").show();
+                alert("登录失败：")
             }
         }
     });

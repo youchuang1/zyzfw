@@ -3,14 +3,18 @@ from datetime import datetime
 from django.core.paginator import Paginator  # 导入分页模块
 from django.db.models import Q  # 导入查询模块
 from django.http import HttpResponseRedirect, JsonResponse  # 导入http响应模块
+from django.shortcuts import get_object_or_404  # 导入404模块
 from django.shortcuts import render  # 导入渲染模块
-from django.views import View  # 导入视图模块
 from django.utils import timezone  # 导入时间模块
+from django.views import View  # 导入视图模块
 
 from .models import *  # 导入数据库模型
 
 
 # Create your views here.
+class DefaultView(View):
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('/jobs/index/')
 
 
 class BaseView(View):
@@ -33,7 +37,7 @@ class BaseView(View):
 
     def parasePage(data, count, pageIndex, pageSize, isPage):
         resl = {'data': data, 'count': count, 'pageIndex': pageIndex, 'pageSize': pageSize,
-                'isPage': isPage}  # 数据 总数  当前页  总页数
+                'isPage': isPage}  # 数据 总数  当前页  总页数 是否有下一页
         return JsonResponse(resl)
 
     '''
@@ -61,7 +65,7 @@ class BaseView(View):
         return JsonResponse(resl)
 
     '''
-    系统异常信息
+    系统异常信息，携带数据
     '''
 
     def error(data, msg='系统异常'):
@@ -83,17 +87,14 @@ class SysView(BaseView):
             return render(request, 'dashboard.html')
         elif module == 'test':
             return render(request, 'test.html')
-        elif module == 'user_list':
+        elif module == 'user_list_test':
             return SysView.user_list(request)
         elif module == 'info':  # 用户信息页面
             return SysView.getInfo(request)
-        elif module == 'sysnums':  # 系统类容页面
-            return SysView.getSysNums(request)
         elif module == 'exit':  # 退出登录
             # 获取session
             del request.session["id"]  # 删除session
             del request.session["role"]  # 删除session
-
             return HttpResponseRedirect('/jobs/index/')  # 重定向到登录页面
         else:
             return self.error()
@@ -101,12 +102,9 @@ class SysView(BaseView):
     def post(self, request, module, *args, **kwargs):
 
         if module == 'login':  # 登录
-
             return SysView.login(request)
-
         elif module == 'info':  # 更新用户信息
             return SysView.updSessionInfo(request)
-
         elif module == 'pwd':  # 更新用户密码
             return SysView.updSessionPwd(request)
         elif module == 'register':  # 注册
@@ -127,12 +125,7 @@ class SysView(BaseView):
         users = User.objects.filter(qry).order_by('create_time')  # 添加 order_by 以对查询结果排序
         paginator = Paginator(users, per_page)  # 分页
         results = []
-        for user in paginator.page(page):
-            results.append({
-                'id': user.id,
-                'name': user.name,
-                'email': user.email
-            })
+
         return SysView.parasePage(results, users.count(), page, per_page,
                                   paginator.num_pages > int(page))  # 数据 总数  当前页  总页数 是否有下一页
 
@@ -148,7 +141,7 @@ class SysView(BaseView):
                 request.session["id"] = user.id  # 将用户id存入session
                 request.session["role"] = user.role  # 将用户类型存入session
 
-                return SysView.success()  # 登录成功
+                return SysView.success('登录成功')  # 登录成功
             else:
                 return SysView.warn('用户密码输入错误')
         else:
@@ -175,14 +168,6 @@ class SysView(BaseView):
 
         return SysView.successData(datas)
 
-    def getSysNums(request):
-
-        resl = {
-            'sp': Video.objects.filter(status=1).count(),
-        }
-
-        return BaseView.successData(resl)
-
     def updSessionInfo(request):
 
         user = request.session.get('id')
@@ -194,19 +179,16 @@ class SysView(BaseView):
             name=request.POST.get('name'),  # 姓名
             email=request.POST.get('email'),  # 邮箱
         )
-        return SysView.success()
+        return SysView.success('信息修改成功')
 
     def updSessionPwd(request):
-
         user = request.session.get('id')
-        if request.POST.get('password') != '':  # 密码不为空
-            print(request.POST.get('password'))
+        if request.POST.get('password') != None:  # 密码不为空
             User.objects.filter(id=user).update(
                 password=request.POST.get('password'),
             )
-
-            return SysView.success()
-        return SysView.error('密码不能为空')
+            return SysView.success('密码修改成功')
+        return SysView.warn('密码不能为空')
 
     def register(request):
 
@@ -237,18 +219,84 @@ class VolunteersView(BaseView):
 
         if module == 'show':
             pass
-        elif module == 'yu':
-            pass
+        elif module == 'page':
+            return self.getPageInfo(request)
+        else:
+            return self.error()
 
     def post(self, request, module, *args, **kwargs):
         if module == 'add':
-            pass
+            return self.addInfo(request)
         elif module == 'upd':
             return self.updInfo(request)
         elif module == 'del':
             return self.delInfo(request)
         else:
             return self.error()
+
+    def getPageInfo(self, request):
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+        query = request.GET.get('query')
+
+        if query:
+            users = User.objects.filter(name__icontains=query)
+        else:
+            users = User.objects.all()
+
+        users = users.order_by('create_time')
+        paginator = Paginator(users, per_page)
+        page_users = paginator.get_page(page)
+
+        # 我们需要将QuerySet转换为列表，因为JsonResponse不能序列化QuerySet
+        user_list = list(page_users.object_list.values())
+
+        # 总用户数
+        total_count = paginator.count
+
+        # 判断是否还有下一页
+        has_next_page = page_users.has_next()
+
+        return SysView.parasePage(user_list, total_count, page, per_page, has_next_page)
+
+    def addInfo(self, request):
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        # avatar = request.FILES.get('avatar')  # 获取头像
+        if not all([name, phone, ]):
+            return SysView.warn('数据不能为空')
+        try:
+            User.objects.create(
+                name=name,
+                phone=phone,
+                # avatar=avatar,
+            )
+        except IndexError:
+            return SysView.warn('添加失败')
+        return SysView.success('添加成功')
+
+    def updInfo(self, request):
+        id = request.POST.get('id')
+        user = User.objects.get(id=id)
+
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        # avatar = request.FILES.get('avatar')  # 获取头像
+
+        if name:
+            user.name = name
+        if phone:
+            user.phone = phone
+        # if avatar:
+        #     user.avatar = avatar
+
+        user.save()
+        return SysView.success('更新成功')
+
+    def delInfo(self, request):
+        id = request.POST.get('id')
+        User.objects.filter(id=id).delete()
+        return SysView.success('删除成功')
 
 
 '''
@@ -262,17 +310,20 @@ class Activitys(BaseView):
 
         if module == 'showadd':
             return render(request, 'add_activity.html')
-        elif module == 'showmgt':
-            activities = Activity.objects.all()
-            return render(request, 'mgt_activity.html', {'activities': activities})
         elif module == 'page':
             return self.getPageInfo(request)
+        # 活动报名
+        elif module == 'apply':
+            return self.apply(request)
+        # 活动报名列表(审核)
+        elif module == 'applylist':
+            return self.applyList(request)
         else:
             return self.error()
 
     def post(self, request, module, *args, **kwargs):
         if module == 'add':
-            return Activitys.addInfo(request)
+            return self.addInfo(request)
         elif module == 'upd':
             return self.updInfo(request)
         elif module == 'del':
@@ -280,7 +331,7 @@ class Activitys(BaseView):
         else:
             return self.error()
 
-    def addInfo(request):
+    def addInfo(self, request):
         title = request.POST.get('title')
         sponsor = request.POST.get('sponsor')
         start_time = request.POST.get('start_time')
@@ -292,7 +343,7 @@ class Activitys(BaseView):
         tag = request.POST.get('tag')
         score = int(request.POST.get('score'))
         apply_num = int(request.POST.get('apply_num'))
-        img_path = request.FILES.get('logo') # 获取图片
+        img_path = request.FILES.get('logo')  # 获取图片
         if not all([title, sponsor, start_time, end_time, place, introduction, tag, score, apply_num, img_path]):
             return SysView.error('数据不能为空')
         try:
@@ -312,28 +363,122 @@ class Activitys(BaseView):
             )
         except IndexError:
             return SysView.error('添加失败')
-        return SysView.success()
+        return SysView.success('添加成功')
 
-    def getPageInfo(request):
+    def getPageInfo(self, request):
+        page = request.GET.get('page', 1)  # 当前页
+        per_page = request.GET.get('per_page', 10)  # 每页显示条数
+        name = request.GET.get('name')  # 活动名称
+        status = request.GET.get('status')  # 活动状态
 
-        page = request.POST.get('page')
-        per_page = request.POST.get('per_page')
-        name = request.POST.get('name')
-        status = request.POST.get('status')
         qry = Q()
-        if name != '':
-            qry = qry & Q(name__icontains=name)
-        if status != '':
+        if name:
+            qry = qry & Q(title__icontains=name)
+        if status:
             qry = qry & Q(status=status)
-        print(qry)
-        activitys = Activity.objects.filter(qry).order_by('create_time')
-        total = activitys.count()
-        activitys = activitys[(int(page) - 1) * int(per_page):int(page) * int(per_page)]
-        resl = {
-            'total': total,
-            'data': list(activitys.values()),
-        }
-        return BaseView.successData(resl)
+
+        activities = Activity.objects.filter(qry).order_by('start_time')  # 添加 order_by 以对查询结果排序
+        paginator = Paginator(activities, per_page)  # 分页
+        results = []
+        for activity in paginator.page(page):
+            results.append({
+                'id': activity.id,  # 活动id
+                'title': activity.title,  # 活动名称
+                'sponsor': activity.sponsor,  # 主办方
+                'start_time': activity.start_time,  # 开始时间
+                'end_time': activity.end_time,  # 结束时间
+                'place': activity.place,  # 活动地点
+                'introduction': activity.introduction,  # 活动简介
+                'tag': activity.tag,  # 活动标签
+                'score': activity.score,  # 活动积分
+                'apply_num': activity.apply_num,  # 活动人数
+                'applied_num': activity.applied_num,  # 已报名人数
+                'status': activity.status,  # 活动状态
+                'img_path': activity.img_path.url if activity.img_path else None,  # 活动图片
+                'create_time': activity.create_time,  # 创建时间
+            })
+
+        return BaseView.parasePage(results, activities.count(), page, per_page,
+                                   paginator.num_pages > int(page))  # 数据、总数、当前页、总页数、是否有下一页
+
+    def updInfo(self, request):
+        id = request.POST.get('id')
+        activity = Activity.objects.get(id=id)
+
+        title = request.POST.get('title')
+        sponsor = request.POST.get('sponsor')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        if start_time and end_time:
+            start_time = timezone.make_aware(datetime.fromisoformat(start_time))
+            end_time = timezone.make_aware(datetime.fromisoformat(end_time))
+        place = request.POST.get('place')
+        introduction = request.POST.get('introduction')
+        tag = request.POST.get('tag')
+        score = request.POST.get('score')
+        if score:
+            score = int(score)
+        apply_num = request.POST.get('apply_num')
+        if apply_num:
+            apply_num = int(apply_num)
+        img_path = request.FILES.get('logo')  # 获取图片
+
+        if title:
+            activity.title = title
+        if sponsor:
+            activity.sponsor = sponsor
+        if start_time:
+            activity.start_time = start_time
+        if end_time:
+            activity.end_time = end_time
+        if place:
+            activity.place = place
+        if introduction:
+            activity.introduction = introduction
+        if tag:
+            activity.tag = tag
+        if score is not None:
+            activity.score = score
+        if apply_num is not None:
+            activity.apply_num = apply_num
+        if img_path:
+            activity.img_path = img_path
+
+        activity.save()
+        return SysView.success('更新成功')
+
+    def delInfo(self, request):
+        id = request.POST.get('id')
+        Activity.objects.filter(id=id).delete()
+        return SysView.success('删除成功')
+
+    def apply(self, request):
+        id = request.POST.get('id')
+        user_id = request.POST.get('user_id')  # assuming you have user_id in the request
+        activity = get_object_or_404(Activity, id=id)  # use get_object_or_404 instead
+
+        if activity.applied_num >= activity.apply_num:
+            return SysView.error('报名人数已满')
+
+        # create a new Activity_apply object
+        Activity_apply.objects.create(
+            activity=activity,
+            user_id=user_id,
+            status=0  # assuming 0 is for pending review
+        )
+
+        activity.applied_num += 1
+        activity.save()
+
+        return SysView.success('报名成功')
+
+    def applyList(self, request):
+        id = request.GET.get('id')
+        activity = get_object_or_404(Activity, id=id)
+        applications = Activity_apply.objects.filter(activity=activity)
+        results = [{'user_id': application.user_id, 'status': application.status, 'apply_time': application.create_time}
+                   for application in applications] # 用户id、状态、报名时间
+        return SysView.successData(results, '获取成功')
 
 
 '''
@@ -350,46 +495,51 @@ class Videos(BaseView):
         elif module == 'showmgt':
             return render(request, 'mgt_video.html')
         elif module == 'page':
-            return Videos.getPageInfo(request)
+            return self.getPageInfo(request)
         else:
             return self.error()
 
     def post(self, request, module, *args, **kwargs):
         if module == 'add':
-            return Videos.addInfo(request)
-        elif module == 'upd':
-            return Videos.updInfo(request)
+            return self.addInfo(request)
         elif module == 'del':
             return self.delInfo(request)
+        elif module == 'upd':
+            return self.updInfo(request)
         else:
             return self.error()
 
-    def getPageInfo(request):
-        page = request.GET.get('page', 1)
-        per_page = request.GET.get('per_page', 10)  #
-        name = request.GET.get('query')
+    def getPageInfo(self, request):
+        page = request.GET.get('page', 1)  # 当前页
+        per_page = request.GET.get('per_page', 10)  # 每页显示条数
+        name = request.GET.get('name')  # 视频名称
+        type = request.GET.get('type')  # 视频类型
 
         qry = Q()
+        if name:
+            qry = qry & Q(title__icontains=name)
+        if type:
+            qry = qry & Q(tag__icontains=type)
 
-        if BaseView.isExit(name):
-            qry = qry & Q(name__icontains=name)
-
-        title = Video.objects.filter(qry).order_by('create_time')  # 添加 order_by 以对查询结果排序
-        paginator = Paginator(title, per_page)  # 分页
+        videos = Video.objects.filter(qry).order_by('create_time')  # 添加 order_by 以对查询结果排序
+        paginator = Paginator(videos, per_page)  # 分页
         results = []
-        for i in paginator.page(page):
+        for video in paginator.page(page):
             results.append({
-                'id': i.id,
-                'title': i.title,
-                'introduction': i.introduction,
-                'tag': i.tag,
-                'score': i.score,
-                'create_time': i.create_time,
+                'id': video.id,  # 视频id
+                'title': video.title,  # 视频名称
+                'introduction': video.introduction,  # 视频简介
+                'tag': video.tag,  # 视频类型
+                'score': video.score,  # 视频积分
+                'img_path': video.img_path.url if video.img_path else None,  # 视频封面
+                'video_path': video.video_path.url if video.video_path else None,  # 视频路径
+                'create_time': video.create_time,  # 创建时间
             })
-        return SysView.parasePage(results, title.count(), page, per_page,
-                                  paginator.num_pages > int(page))  # 数据 总数  当前页  总页数 是否有下一页
 
-    def addInfo(request):
+        return BaseView.parasePage(results, videos.count(), page, per_page,
+                                   paginator.num_pages > int(page))  # 数据、总数、当前页、总页数、是否有下一页
+
+    def addInfo(self, request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         tags = request.POST.get('tags')
@@ -398,7 +548,7 @@ class Videos(BaseView):
         video_file = request.FILES.get('video_file')
 
         if not all([title, description, tags, cover_image, points, video_file]):
-            return SysView.error('数据不能为空')
+            return SysView.warn('数据不能为空')
         try:
             Video.objects.create(
                 title=title,
@@ -409,8 +559,39 @@ class Videos(BaseView):
                 video_path=video_file,
             )
         except IndexError:
-            return SysView.error('添加失败')
-        return SysView.success()
+            return SysView.warn('添加失败')
+        return SysView.success('上传成功')
+
+    def delInfo(self, request):
+        id = request.POST.get('id')
+        Video.objects.filter(id=id).delete()
+        return SysView.success('删除成功')
+
+    def updInfo(self, request):
+        id = request.POST.get('id')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        tags = request.POST.get('tags')
+        cover_image = request.FILES.get('cover_image')
+        points = request.POST.get('points')
+        video_file = request.FILES.get('video_file')
+
+        if not all([title, description, tags, cover_image, points, video_file]):
+            return SysView.warn('数据不能为空')
+        try:
+            Video.objects.filter(id=id).update(
+                title=title,
+                introduction=description,
+                tag=tags,
+                img_path=cover_image,
+                score=points,
+                video_path=video_file,
+            )
+        except IndexError:
+            return SysView.warn('修改失败')
+        return SysView.success('修改成功')
+
+
 '''
 问题答复相关
 '''

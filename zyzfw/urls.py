@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+import zyz.views
 
 urlpatterns = [
+    path('', zyz.views.DefaultView.as_view(), name='default'),
     path('admin/', admin.site.urls),
     path('jobs/', include('zyz.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG: # 如果是调试模式
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # 添加媒体文件路由
