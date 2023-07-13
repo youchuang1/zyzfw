@@ -11,22 +11,226 @@
     {% include 'mb/menus.html' %}
 
 
-
     <div class="content">
         <!-- 导航栏 -->
         {% include 'mb/nav.html' %}
 
 
         <!-- 内容 -->
+        <div class="container mt-3">
+            <h2>视频列表</h2>
+            <div class="input-group mb-3">
+                <input id="searchBoa" type="text" class="form-control" placeholder="名字搜索">
+                <input id="searchBob" type="text" class="form-control" placeholder="邮箱搜索">
+                <input id="searchBoc" type="text" class="form-control" placeholder="手机号搜索">
+            </div>
+            <select id="typeBox" class="form-control mb-3">
+                <option value="">用户类型</option>
+                <option value="0">普通用户</option>
+                <option value="1">志愿者</option>
+                <option value="2">管理员</option>
+            </select>
+            <table id="videoTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">手机号</th>
+                    <th scope="col">邮箱</th>
+                    <th scope="col">角色</th>
+                    <th scope="col">积分</th>
+                    <th scope="col">等级</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <!-- 模态框 -->
+            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">编辑用户</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editForm">
+                                <!-- 添加一个隐藏的id字段，用于区分是添加还是编辑 -->
+                                <input type="hidden" name="id" id="id">
+                                <!-- 在这里添加其他需要的输入字段 -->
 
-
-
-
-
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="butstop">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" id="editSubmit">保存更改</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul id="pagination" class="pagination">
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
 {% include 'mb/commjs.html' %}
+<script>
+    var current_page = 1;   // 当前页码
+    var per_page = 10; // 每页显示数量
+    var current_sort = ""; // 排序字段
+    var current_search = ""; // 搜索关键字
+    var current_type = ""; // 类型
 
+    function refreshTable(page, per_page, name, type, sort) {
+        $.ajax({
+            url: '/jobs/video/page/',
+            method: 'GET',
+            data: {
+                page: page,
+                per_page: per_page,
+                name: name,
+                type: type,
+                sort: sort,
+            },
+            success: function (response) {
+                // 更新表格
+                var videos = response.data;
+                var videosHtml = '';
+                videos.forEach(function (video) {
+                    videosHtml += '<tr>';
+                    videosHtml += '<td>' + video.id + '</td>';
+                    videosHtml += '<td>' + video.title + '</td>';
+                    videosHtml += '<td>' + video.introduction + '</td>';
+                    videosHtml += '<td>' + video.score + '</td>';
+                    videosHtml += '<td>' + video.create_time + '</td>';
+                    videosHtml += '<td><button type="button" class="btn btn-primary btn-sm">编辑</button><button type="button" class="btn btn-danger btn-sm delete" data-id="' + video.id + '">删除</button></td>';
+                    videosHtml += '</tr>';
+                });
+                $('#videoTable tbody').html(videosHtml);
+
+                // 更新分页
+                var paginationHtml = '';
+                for (var i = 1; i <= response.pageSize; i++) {
+                    paginationHtml += '<li class="page-item' + (i === response.pageIndex ? ' active' : '') + '"><a class="page-link" href="#">' + i + '</a></li>';
+                }
+                $('#pagination').html(paginationHtml); // 更新分页
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // 获取活动信息并填充模态框
+    function getVideoInfo(id) {
+        $.ajax({
+            url: '/jobs/video/get/',
+            method: 'GET',
+            data: {
+                id: id,
+            },
+            success: function (response) {
+                var video = response.data;
+                $('#id').val(video.id);
+                $('#edit-title').val(video.title); // 填充标题
+                $('#edit-description').val(video.introduction); // 填充简介
+                $('#edit-points').val(video.score); // 填充积分数
+                $('#edit-type').val(video.type); // 填充类型
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        // 初始加载表格
+        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+
+        // 搜索框事件
+        $('#searchBox').on('input', function () {
+            current_search = $(this).val();
+            refreshTable(1, per_page, current_search, current_type, current_sort);
+        });
+
+        // 分页事件
+        $(document).on('click', '#pagination .page-link', function (e) {
+            e.preventDefault();
+            current_page = parseInt($(this).text());
+            refreshTable(current_page, per_page, current_search, current_type, current_sort);
+        });
+
+        // 删除事件
+        $(document).on('click', '.delete', function () {
+            var id = $(this).data('id');
+            $.ajax({
+                url: '/jobs/video/del/',
+                method: 'POST',
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    alert(response.msg);
+                    if (response.code === 0) {
+                        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        // 类型选择事件
+        $('#typeBox').on('change', function () {
+            current_type = $(this).val();
+            refreshTable(1, per_page, current_search, current_type, current_sort);
+        });
+
+        // 排序事件
+        $(document).on('click', '.sort', function () {
+            current_sort = $(this).data('sort-field');
+            refreshTable(current_page, per_page, current_search, current_type, current_sort);
+        });
+        // 编辑按钮事件
+        $(document).on('click', '.btn-primary', function () {
+            var id = $(this).closest('tr').find('.delete').data('id');
+            getVideoInfo(id);
+            $('#editModal').modal('show');
+        });
+
+        // 编辑提交事件
+        $('#editSubmit').on('click', function () {
+            var formData = new FormData($('#editForm')[0]);
+            $.ajax({
+                url: '/jobs/video/upd/',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert(response.msg);
+                    if (response.code === 0) {
+                        $('#editModal').modal('hide');
+                        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        // 关闭模态框事件
+        $('#butstop').on('click', function () {
+            $('#editModal').modal('hide');
+        });
+    });
+</script>
 </body>
 </html>

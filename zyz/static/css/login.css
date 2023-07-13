@@ -1,0 +1,178 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(30deg, #2A9EEB, #ffffff);
+}
+
+.content {
+    background-color: aliceblue;
+    position: fixed;
+    top: 20vh;
+    left: 28vw;
+    width: 650px;
+    height: 415px;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    z-index: 99;
+}
+
+/* 注册 */
+.form-box {
+    position: absolute;
+    top: -10%;
+    left: 5%;
+    background-color: #72BCEE;
+    width: 320px;
+    height: 500px;
+    border-radius: 5px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    transition: 0.5s ease-in-out;
+}
+
+/* 登录 */
+.register-box,
+.login-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+    transition: 0.5s;
+}
+
+.content h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    color: aliceblue;
+    letter-spacing: 5px;
+}
+
+.content input {
+    background-color: transparent;
+    width: 70%;
+    color: aliceblue;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 10px 0;
+    text-indent: 10px;
+    margin: 8px 0;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+.content input::placeholder {
+    color: aliceblue;
+}
+
+.content input:focus {
+    color: #13486B;
+    outline: none;
+    border-bottom: 1px solid #13486B;
+    transition: 0.5s;
+}
+
+.content input:focus::placeholder {
+    opacity: 0;
+}
+
+.form-box button {
+    width: 70%;
+    margin-top: 35px;
+    background-color: rgb(255, 255, 255);
+    outline: none;
+    border-radius: 8px;
+    padding: 13px;
+    color: #13486B;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+}
+
+.form-box button:hover {
+    background-color: #13486B;
+    color: rgb(255, 255, 255);
+    transition: background-color 0.5s ease;
+}
+
+/* 滑块 */
+.con-box {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%)
+}
+
+.con-box.left {
+    left: -2%;
+}
+
+.con-box.right {
+    right: -2%;
+}
+
+.con-box h2 {
+    color: #8e9aaf;
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.con-box p {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #8e9aaf;
+    text-align: center;
+}
+
+.con-box span {
+    color: #217AB7;
+}
+
+.con-box img {
+    width: 165px;
+    height: 150px;
+    opacity: 0.8;
+    margin: 40px 0;
+}
+
+.con-box button {
+    margin-top: 3%;
+    background-color: aliceblue;
+    color: #217AB7;
+    border: 1px solid #217AB7;
+    padding: 6px 10px;
+    letter-spacing: 1px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.con-box button:hover {
+    color: aliceblue;
+    background-color: #217AB7;
+}
+
+.close {
+    width: 20px;
+    height: 20px;
+    color: #217AB7;
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    cursor: pointer;
+}

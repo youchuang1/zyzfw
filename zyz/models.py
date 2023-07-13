@@ -74,6 +74,8 @@ class Video(models.Model):
     img_path = models.ImageField(upload_to='file/img',verbose_name='视频封面图片路径')
     score = models.IntegerField(verbose_name='积分')
     video_path = models.FileField(upload_to='file/video',verbose_name='视频路径')
+    # 视频类型
+    type = models.IntegerField(verbose_name='类型') # 0:医学课程 1:养育课程 2:教育课程
     # 创建时间
     create_time = models.DateTimeField(auto_now_add=True,verbose_name='创建时间')
     class Meta:

@@ -1,43 +1,56 @@
-{% if request.session.role == 0 %}
-<div class="sidebar pe-4 pb-3">
-    <nav class="navbar bg-light navbar-light">
-        <a href="/jobs/dashboard/" class="navbar-brand mx-4 mb-3">
-            <h3 class="text-primary">育苗朝阳后台管理</h3>
-        </a>
-        <div class="navbar-nav w-100">
-            <a href="/jobs/dashboard/" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>大数据仪表</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                        class="fa fa-laptop me-2"></i>志愿者活动管理</a>
-                <div class="dropdown-menu bg-transparent border-0">
-                    <a href="/jobs/activity/showadd/" class="dropdown-item">添加活动</a>
-                    <a href="/jobs/activity/showmgt/" class="dropdown-item">活动管理</a>
+{% if request.session.role == 2 %}
+    <div class="sidebar pe-4 pb-3">
+        <nav class="navbar bg-light navbar-light">
+            <a href="/jobs/dashboard/" class="navbar-brand mx-4 mb-3">
+                <h3 class="text-primary">育苗朝阳后台管理</h3>
+            </a>
+            <div class="navbar-nav w-100">
+                <a href="/jobs/dashboard/" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>大数据仪表</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                            class="fa fa-laptop me-2"></i>志愿者活动管理</a>
+                    <div class="dropdown-menu bg-transparent border-0">
+                        <a href="/jobs/activity/showadd/" class="dropdown-item">添加活动</a>
+                        <a href="/jobs/activity/showmgt/" class="dropdown-item">活动管理</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                            class="fa fa-th me-2"></i>学习视频管理</a>
+                    <div class="dropdown-menu bg-transparent border-0">
+                        <a href="/jobs/video/showadd/" class="dropdown-item">添加视频</a>
+                        <a href="/jobs/video/showmgt/" class="dropdown-item">管理视频</a>
+                    </div>
+                </div>
+                <a href="/jobs/guests/show/" class="nav-item nav-link"><i class="fa fa-table me-2"></i>志愿者管理</a>
+            </div>
+        </nav>
+    </div>
+{% elif request.session.role == 0 %}
+    <div class="sidebar pe-4 pb-3">
+        <nav class="navbar bg-light navbar-light">
+            <a href="/jobs/dashboard/" class="navbar-brand mx-4 mb-3">
+                <h3 class="text-primary">育苗朝阳</h3>
+            </a>
+            <div class="navbar-nav w-100">
+                <a href="/jobs/dashboard/" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>大数据仪表</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                            class="fa fa-laptop me-2"></i>志愿者活动</a>
+                    <div class="dropdown-menu bg-transparent border-0">
+                        <a href="/jobs/activity/mysignup/" class="dropdown-item">我的报名</a>
+                        <a href="/jobs/activity/eventhall/" class="dropdown-item">活动大厅</a>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                            class="fa fa-th me-2"></i>学习视频</a>
+                    <div class="dropdown-menu bg-transparent border-0">
+                        <a href="/jobs/video/mystudies/" class="dropdown-item">我的学习</a>
+                        <a href="/jobs/video/videohall/" class="dropdown-item">视频大厅</a>
+                    </div>
                 </div>
             </div>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                        class="fa fa-th me-2"></i>学习视频管理</a>
-                <div class="dropdown-menu bg-transparent border-0">
-                    <a href="/jobs/video/showadd/" class="dropdown-item">添加视频</a>
-                    <a href="/jobs/video/showmgt/" class="dropdown-item">管理视频</a>
-                </div>
-            </div>
-            <a href="/jobs/problem/show/" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>问题答复管理</a>
-            <a href="/jobs/guests/show/" class="nav-item nav-link"><i class="fa fa-table me-2"></i>志愿者管理</a>
-            <a href="#" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>预留</a>
-        </div>
-    </nav>
-</div>
-{% elif request.session.role == 1 %}
-<div class="sidebar pe-4 pb-3">
-    <nav class="navbar bg-light navbar-light">
-        <a href="/jobs/indexss/" class="navbar-brand mx-4 mb-3">
-            <h3 class="text-primary">朝阳育苗</h3>
-        </a>
-        <div class="navbar-nav w-100">
-            <a href="/jobs/indexss/" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>大数据仪表</a>
-
-        </div>
-    </nav>
-</div>
+        </nav>
+    </div>
 {% endif %}

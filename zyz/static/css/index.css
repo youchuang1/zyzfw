@@ -247,129 +247,63 @@ ul {
     cursor: pointer;
 }
 
-/* 夹层 */
-.login_interlayer {
+/* 侧边栏 */
+#sidebar {
     position: fixed;
-    width: 100vw;
-    height: 100vh;
-    background-color: black;
-    opacity: 0.5;
-    z-index: 98;
-    left: 0;
-    top: 0;
-    display: none;
-}
-
-/* 成功登录 */
-#Successful_login {
-    position: fixed;
-    width: 720px;
-    height: 570px;
-    left: 35px;
-    bottom: 70px;
+    top: 155px;
+    left: 10px;
+    height: 70vh;
+    width: 60px;
     background-color: #ffffff;
-    border-radius: 20px;
-    z-index: 99;
+    z-index: 98;
+    border-radius: 10px;
+    transition: all 0.3s;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    display: none;
-    box-sizing: border-box;
-    color: #575d67;
+    display: flex;
+    justify-content: center;
 }
 
-.sl_box_01 {
-    background-color: #e5e8ed;
-    width: 220px;
-    height: 100%;
+.sidebar_box_01 {
+    position: absolute;
+    left: 0px;
+    top: 5px;
+}
+
+#sidebar:hover {
+    width: 275px;
+}
+
+.sidebar_box_01 ul {
+    height: 40vh;
     display: flex;
     flex-direction: column;
-}
-
-.sl_box_01 div:nth-of-type(1) {
-    height: 90px;
-    width: 100%;
-    background-color: #ffffff;
-    border-right: 0.08px solid #bab9b9;
-    border-bottom: 0.08px solid #bab9b9;
-    display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    flex-direction: row;
+    justify-content: space-around;
 }
 
-.sl_box_01 div:nth-of-type(1) img {
+.sidebar_box_01 ul li {
+    width: 275px;
+    height: 45px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.sidebar_box_01 ul li:hover {
+    background-color: rgb(236, 236, 236);
+}
+
+.sidebar_box_01 ul li img {
     width: 40px;
     height: 40px;
-    border-radius: 360px;
-    background-color: #e5e8ed;
 }
 
-.sl_box_01 div:nth-of-type(1) p {
-    width: 90px;
-    overflow: hidden;
-    font-size: 14px;
-    color: #575d67;
-}
-
-.sl_box_01 div:nth-of-type(2) {
-    height: 480px;
-    width: 100%;
-    border-right: 0.08px solid #bab9b9;
-}
-
-.sl_box_01 div:nth-of-type(2) ul {
-    display: flex;
+.sidebar_box_01 ul li span {
     width: 190px;
-    height: 400px;
-    flex-direction: column;
-    margin: 25px auto;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.sl_box_01 div:nth-of-type(2) ul li {
-    height: 36px;
-    width: 185px;
-    margin-bottom: 5px;
+    height: 40px;
     display: flex;
     align-items: center;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding-left: 10px;
-    ;
-    border-radius: 5px;
-    transition: all 0.3s;
-}
-
-.sl_box_01 div:nth-of-type(2) ul li:hover {
-    background-color: #ffffff;
-}
-
-.sl_box_02 {
-    background-color: rgba(255, 127, 127, 0);
-    width: 520px;
-    height: 100%;
-}
-
-/* 头像 */
-.Head_shot {
-    position: fixed;
-    width: 45px;
-    height: 45px;
-    bottom: 20px;
-    left: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: black;
-    border-radius: 360px;
-    opacity: 0.5;
-    z-index: 99;
-}
-
-.Head_shot img {
-    width: 100%;
-    height: 100%;
-    border-radius: 360px;
 }
 
 /* 首页 */
@@ -380,11 +314,14 @@ ul {
     margin-top: 60px;
     width: 100%;
     height: 85vh;
+    overflow: hidden;
 }
 
 #banner img {
     width: 100%;
-    height: 100%;
+    height: 150%;
+    position: relative;
+    top: -200px;
 }
 
 .texth1 {
@@ -524,6 +461,55 @@ ul {
     margin: 0 auto;
     margin-top: 60px;
     margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.Other_introduction_div1 {
+    display: flex;
+    width: 1190px;
+    height: 440px;
+    background-color: #ffffff;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.Other_introduction_div2 {
+    width: 1190px;
+    background-color: #13486B;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.introduction_div2_z1 {
+    width: 466px;
+    height: 544px;
+    background-color: #d21e1e;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.introduction_div2_z2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.introduction_div2_z2 div:nth-of-type(1) {
+    width: 652px;
+    height: 252px;
+    background-color: #ffffff;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.introduction_div2_z2 div:nth-of-type(2) {
+    width: 652px;
+    height: 252px;
+    background-color: #ffffff;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
 }
 
 #ending {
@@ -531,95 +517,10 @@ ul {
     height: 50vh;
     background: linear-gradient(3deg, #2A9EEB, #ffffff);
 }
-
-/* 学习视频 */
-#Learning_Videos {
-    margin-top: 100px;
-}
-
-.tad-nav {
-    width: 35vw;
-    height: 40px;
-    display: flex;
-    margin-left: 30px;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.tad-nav img {
-    width: 40px;
-}
-
-.tad-nav div {
-    display: flex;
-    align-items: center;
-}
-
-.tad-nav ul {
-    width: 345px;
-    display: flex;
-    justify-content: space-around;
-}
-
-.tad-nav ul li a {
-    border-bottom: 2px solid rgba(255, 255, 255, 0);
-}
-
-.item {
-    width: 100%;
-    margin-bottom: 10px;
-    display: none;
-    margin-top: 30px;
-}
-
-.vidbox {
-    width: 90vw;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.tad-nav ul li a.active {
-    border-color: #13486B;
-}
-
-.tab-content .item.active {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.vidbox div {
-    width: 280px;
-    height: 160px;
-    border-radius: 20px;
-    display: flex;
-    background-color: white;
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s;
-    flex-direction: column;
-}
-
-.vidbox div:hover {
-    transform: translateY(-12px);
-    box-shadow: 0px 20px 20px 12px rgba(0, 0, 0, 0.1);
-}
-
-.vidbox div img {
-    position: absolute;
-    width: 280px;
-    height: 160px;
-    border-radius: 20px;
-}
-
-.vidbox div p{
-    background-color: #ffffff;
-    position: relative;
-    top: 65%;
-    width: 270px;
-    height: 56px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    padding-left: 10px;
+#ICP {
+    text-align: center;
+    padding: 20px;
+    background-color: #f2f2f2;
+    color: #333;
+    font-size: 14px;
 }

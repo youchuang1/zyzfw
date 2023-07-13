@@ -10,103 +10,275 @@
     <!-- 侧边栏 -->
     {% include 'mb/menus.html' %}
 
-
     <div class="content">
         <!-- 导航栏 -->
         {% include 'mb/nav.html' %}
 
-
         <!-- 活动列表 -->
         <div class="container mt-3">
             <h2>活动列表</h2>
-            <table class="table table-striped">
+            <div class="input-group mb-3">
+                <input id="searchBox" type="text" class="form-control" placeholder="活动名称搜索">
+            </div>
+            <select id="statusBox" class="form-control mb-3">
+                <option value="">全部状态</option>
+                <option value="0">未开始</option>
+                <option value="1">进行中</option>
+                <option value="2">已结束</option>
+            </select>
+            <table id="activitiesTable" class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">活动名称</th>
-                    <th scope="col">主办方</th>
-                    <th scope="col">开始时间</th>
-                    <th scope="col">结束时间</th>
-                    <th scope="col">地点</th>
+                    <th scope="col">id<span class="sort" data-sort-field="id"></span></th>
+                    <th scope="col">活动名称<span class="sort" data-sort-field="title"></span></th>
+                    <th scope="col">主办方<span class="sort" data-sort-field="sponsor"></span></th>
+                    <th scope="col">开始时间<span class="sort" data-sort-field="start_time"></span></th>
+                    <th scope="col">结束时间<span class="sort" data-sort-field="end_time"></span></th>
+                    <th scope="col">地点<span class="sort" data-sort-field="place"></span></th>
                     <th scope="col">操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- 假设你有一个活动列表变量 activities，你需要在你的视图函数中传递这个变量 -->
-                {% for activity in activities %}
-                    <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ activity.title }}</td>
-                        <td>{{ activity.sponsor }}</td>
-                        <td>{{ activity.start_time }}</td>
-                        <td>{{ activity.end_time }}</td>
-                        <td>{{ activity.place }}</td>
-                        <td>
-                            <!-- 编辑按钮，触发编辑模态框 -->
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#editModal{{ activity.id }}">编辑
-                            </button>
-
-                            <!-- 删除按钮，触发删除确认模态框 -->
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal{{ activity.id }}">删除
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- 编辑模态框 -->
-                    <div class="modal fade" id="editModal{{ activity.id }}" tabindex="-1"
-                         aria-labelledby="editModalLabel{{ activity.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel{{ activity.id }}">编辑活动</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- 这里可以放置编辑活动的表单 -->
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭
-                                    </button>
-                                    <button type="button" class="btn btn-primary">保存更改</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 删除确认模态框 -->
-                    <div class="modal fade" id="deleteModal{{ activity.id }}" tabindex="-1"
-                         aria-labelledby="deleteModalLabel{{ activity.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteModalLabel{{ activity.id }}">确认删除</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    确定要删除这个活动吗？
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消
-                                    </button>
-                                    <button type="button" class="btn btn-danger">删除</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
                 </tbody>
             </table>
+            <!-- 模态框 -->
+            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">编辑活动</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editForm">
+                                <!-- 在这里添加其他需要的输入字段 -->
+                                <!-- 添加一个隐藏的id字段，用于区分是添加还是编辑 -->
+                                <input type="hidden" name="id" id="id">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">标题</label>
+                                    <input type="text" class="form-control" name="title" required id="title">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="sponsor" class="form-label">主办方</label>
+                                    <input type="text" class="form-control" name="sponsor" required id="sponsor">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="start_time" class="form-label">开始时间</label>
+                                    <input type="datetime-local" class="form-control" name="start_time" required
+                                           id="start_time">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="end_time" class="form-label">结束时间</label>
+                                    <input type="datetime-local" class="form-control" name="end_time" required
+                                           id="end_time">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="place" class="form-label">地点</label>
+                                    <input type="text" class="form-control" name="place" required id="place">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="introduction" class="form-label">简介</label>
+                                    <textarea class="form-control" name="introduction" rows="3" required
+                                              id="introduction"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tag" class="form-label">标签</label>
+                                    <input type="text" class="form-control" name="tag" required id="tag">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="score" class="form-label">积分</label>
+                                    <input type="number" class="form-control" name="score" required id="score">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="apply_num" class="form-label">申请人数</label>
+                                    <input type="number" class="form-control" name="apply_num" required id="apply_num">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="logo" class="form-label">活动Logo</label>
+                                    <input class="form-control" type="file" id="logo" name="logo">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="butstop">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" id="editSubmit">保存更改</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul id="pagination" class="pagination">
+                </ul>
+            </nav>
         </div>
-
-
     </div>
 </div>
 
 {% include 'mb/commjs.html' %}
 
+<script>
+    var current_page = 1;   // 当前页码
+    var per_page = 10; // 每页显示数量
+    var current_sort = ""; // 排序字段
+    var current_search = ""; // 搜索关键字
+    var current_status = ""; // 状态
+
+    function refreshTable(page, per_page, name, status, sort) {
+        $.ajax({
+            url: '/jobs/activity/page/',
+            method: 'GET',
+            data: {
+                page: page,
+                per_page: per_page,
+                name: name,
+                status: status,
+                sort: sort,
+            },
+            success: function (response) {
+                // 更新表格
+                var activities = response.data;
+                var activitiesHtml = '';
+                activities.forEach(function (activity) {
+                    activitiesHtml += '<tr>';
+                    activitiesHtml += '<td>' + activity.id + '</td>';
+                    activitiesHtml += '<td>' + activity.title + '</td>';
+                    activitiesHtml += '<td>' + activity.sponsor + '</td>';
+                    activitiesHtml += '<td>' + activity.start_time + '</td>';
+                    activitiesHtml += '<td>' + activity.end_time + '</td>';
+                    activitiesHtml += '<td>' + activity.place + '</td>';
+                    activitiesHtml += '<td><button type="button" class="btn btn-primary btn-sm edit" data-id="' + activity.id + '">编辑</button><button type="button" class="btn btn-danger btn-sm delete" data-id="' + activity.id + '">删除</button></td>';
+                    activitiesHtml += '</tr>';
+                });
+                $('#activitiesTable tbody').html(activitiesHtml);
+
+                // 更新分页
+                var paginationHtml = '';
+                for (var i = 1; i <= response.pageSize; i++) {
+                    paginationHtml += '<li class="page-item' + (i === response.pageSize ? ' active' : '') + '"><a class="page-link" href="#">' + i + '</a></li>';
+                }
+                $('#pagination').html(paginationHtml); // 更新分页
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // 获取活动信息并填充模态框
+    function fillModal(id) {
+        $.ajax({
+            url: '/jobs/activity/get/',
+            method: 'GET',
+            data: {
+                id: id,
+            },
+            success: function (response) {
+                if (response.code === 0) {
+                    var activity = response.data;
+                    $("#id").val(activity.id);
+                    $("#title").val(activity.title);
+                    $("#sponsor").val(activity.sponsor);
+                    // Convert the time to the correct format
+                    var startTime = new Date(activity.start_time);
+                    var endTime = new Date(activity.end_time);
+                    $("#start_time").val(startTime.toISOString().slice(0, 16));
+                    $("#end_time").val(endTime.toISOString().slice(0, 16));
+                    $("#place").val(activity.place);
+                    $("#introduction").val(activity.introduction);
+                    $("#tag").val(activity.tag);
+                    $("#score").val(activity.score);
+                    $("#apply_num").val(activity.apply_num);
+                    $("#logo").val(''); // Can't fill the file input due to security reasons
+                    $("#editModal").modal('show'); // 显示模态框
+                } else {
+                    alert(response.msg);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        // 初始加载表格
+        refreshTable(current_page, per_page, current_search, current_status, current_sort);
+
+        // 搜索框事件
+        $('#searchBox').on('input', function () {
+            current_search = $(this).val();
+            refreshTable(1, per_page, current_search, current_status, current_sort);
+        });
+
+        // 状态选择框事件
+        $('#statusBox').on('change', function () {
+            current_status = $(this).val();
+            refreshTable(1, per_page, current_search, current_status, current_sort);
+        });
+
+        // 分页事件
+        $(document).on('click', '#pagination .page-link', function (e) {
+            e.preventDefault();
+            current_page = parseInt($(this).text());
+            refreshTable(current_page, per_page, current_search, current_status, current_sort);
+        });
+
+        // 排序事件
+        $(document).on('click', '.sort', function () {
+            current_sort = $(this).data('sort-field');
+            refreshTable(current_page, per_page, current_search, current_status, current_sort);
+        });
+
+        // 删除事件
+        $(document).on('click', '.delete', function () {
+            var id = $(this).data('id');
+            $.ajax({
+                url: '/jobs/activity/del/',
+                method: 'POST',
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    alert(response.msg);
+                    if (response.code === 0) {
+                        refreshTable(current_page, per_page, current_search, current_status, current_sort);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        // 编辑事件
+        $(document).on('click', '.edit', function () {
+            var id = $(this).data('id');
+            fillModal(id);
+        });
+
+        // 编辑表单提交事件
+        $('#editSubmit').on('click', function () {
+            $.ajax({
+                url: '/jobs/activity/upd/',
+                method: 'POST',
+                data: $('#editForm').serialize(),
+                success: function (response) {
+                    alert(response.msg);
+                    if (response.code === 0) {
+                        refreshTable(current_page, per_page, current_search, current_status, current_sort);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+        // 关闭模态框事件
+        $('#butstop').on('click', function () {
+            $('#editModal').modal('hide');  // 隐藏模态框
+        });
+    });
+</script>
 </body>
 </html>
