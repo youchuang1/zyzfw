@@ -3,13 +3,118 @@
 <html lang="en">
 
 {% include 'mb/head.html' %}
+<style>
+    #video_box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
 
+    /* 学习视频 */
+    #Learning_Videos {
+        margin-top: 5%;
+    }
+
+    .tad-nav {
+        width: 50%;
+        height: 40px;
+        display: flex;
+        margin-left: 30px;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .tad-nav img {
+        width: 40px;
+    }
+
+    .tad-nav div {
+        display: flex;
+        align-items: center;
+        width: 30%;
+    }
+
+    .tad-nav ul {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        list-style: none;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+    }
+
+
+    .tad-nav ul li {
+        margin-right: 3%;
+    }
+
+    .tad-nav ul li a {
+        color: black;
+        border-bottom: 2px solid rgba(255, 255, 255, 0);
+    }
+
+    .item {
+        width: 100%;
+        margin-bottom: 10px;
+        display: none;
+        margin-top: 30px;
+    }
+
+    .tad-nav ul li a.active {
+        border-color: #13486B;
+    }
+
+    .tab-content .item.active {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item div {
+        width: 280px;
+        height: 160px;
+        border-radius: 20px;
+        display: flex;
+        background-color: white;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+        flex-direction: column;
+        overflow: hidden;
+        margin: 30px;
+        position: relative;
+    }
+
+    .item div:hover {
+        transform: translateY(-12px);
+        box-shadow: 0px 20px 20px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .item div img {
+        position: absolute;
+        width: 280px;
+        height: 160px;
+        border-radius: 20px;
+    }
+
+    .item div p {
+        background-color: #ffffff;
+        position: relative;
+        top: 65%;
+        width: 100%;
+        height: 56px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding-left: 10px;
+    }
+</style>
 <body>
 <div class="container-fluid position-relative bg-white d-flex p-0">
 
     <!-- 侧边栏 -->
     {% include 'mb/menus.html' %}
-
 
 
     <div class="content">
@@ -18,15 +123,149 @@
 
 
         <!-- 内容 -->
-        <h1>视频大厅</h1>
-
-
-
-
+        <div class="container-fluid pt-4 px-4">
+            <div class="row vh-100 bg-light rounded align-items-center justify-content-center mx-0">
+                <div id="Learning_Videos">
+                    <div class="tad-nav">
+                        <div>
+                            <img src="{% static '/img/课程管理.png' %}">
+                            <h4>课程</h4>
+                        </div>
+                        <ul>
+                            <li><a class="active" href="#">医学课程</a></li>
+                            <li><a href="#">养育课程</a></li>
+                            <li><a href="#">教育课程</a></li>
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div class="item active">
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-1</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-2</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-3</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-4</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-5</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-6</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-7</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-8</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-9</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-10</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-11</p>
+                            </div>
+                            <div>
+                                <img src="./img/img1 (2).jpg">
+                                <p>医学课程-12</p>
+                            </div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="item">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {% include 'mb/commjs.html' %}
+<script>
+    function Video_TAB() {
+        const arss = document.querySelectorAll('.tad-nav a')
+        for (let i = 0; i < arss.length; i++) {
+            arss[i].addEventListener('click', () => {
+                document.querySelector('.tad-nav .active').classList.remove('active')
+                arss[i].classList.add('active')
 
+                document.querySelector('.tab-content .active').classList.remove('active')
+                document.querySelector(`.item:nth-child(${i + 1})`).classList.add('active')
+            })
+        }
+    }
+
+    Video_TAB();  //调用
+</script>
 </body>
 </html>

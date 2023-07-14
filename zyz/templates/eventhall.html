@@ -5,11 +5,96 @@
 {% include 'mb/head.html' %}
 
 <body>
+<style>
+    #activity {
+        display: flex;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        justify-content: space-around;
+    }
+
+    #activity div:nth-of-type(1) {
+        width: 70%;
+    }
+
+    .announcement {
+        background: #FFFFFF;
+        display: flex;
+        width: 25%;
+        border-radius: 10px;
+        height: 70%;
+        margin-top: 30px;
+        box-shadow: -1px 2px 6px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        justify-content: center;
+    }
+
+    .announcement:hover {
+        transform: translateY(-12px);
+        box-shadow: 0px 20px 20px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #activity div:nth-of-type(1) ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #activity div:nth-of-type(1) ul li {
+        width: 95%;
+        height: 200px;
+        background: #FFFFFF;
+        margin-top: 30px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    #activity div:nth-of-type(1) ul li:hover {
+        transform: translateY(-12px);
+        box-shadow: 0px 20px 20px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #activity div:nth-of-type(1) ul li span:nth-of-type(1) {
+        width: 160px;
+        height: 160px;
+        overflow: hidden;
+        border-radius: 10px;
+        position: relative;
+    }
+
+    #activity div:nth-of-type(1) ul li span img {
+        width: 100%;
+        height: 100%;
+        transition: all 0.5s;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    #activity div:nth-of-type(1) ul li span img:hover {
+        width: 110%;
+        height: 110%;
+    }
+
+    #activity div:nth-of-type(1) ul li span:nth-of-type(2) {
+        width: 70%;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+</style>
 <div class="container-fluid position-relative bg-white d-flex p-0">
 
     <!-- 侧边栏 -->
     {% include 'mb/menus.html' %}
-
 
 
     <div class="content">
@@ -18,11 +103,91 @@
 
 
         <!-- 内容 -->
-        <h1>活动大厅</h1>
-
-
-
-
+        <div class="container-fluid pt-4 px-4">
+            <div class="row vh-100 bg-light rounded align-items-center justify-content-center mx-0">
+                <div id="activity">
+                    <div>
+                        <ul>
+                            <li>
+                                    <span>
+                                        <img src="./微信图片_20230523215002.jpg">
+                                    </span>
+                                <span>
+                                        <h4>玩具捐赠和消毒</h4>
+                                        <p>志愿者会向婴幼儿家庭捐赠未使用过的玩具，进行消毒。在此基础上，志愿者还会提供一些合理使用玩具的技巧和项目，如拼图、配对游戏等，让孩子们更好地体验游戏的乐趣。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./微信图片_20230523215144.jpg">
+                                    </span>
+                                <span>
+                                        <h4>健康筛查和健康教育</h4>
+                                        <p>志愿者将为婴幼儿提供一次全面的健康筛查，检查他们的生长发育、听力、视力、口腔健康、免疫系统和营养状况等方面。同时，志愿者会根据孩子们的特殊需求和健康问题，提供一些相关的健康建议和指导，例如关于良好饮食习惯、早期干预等方面的知识。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                            <li>
+                                    <span>
+                                        <img src="./屏幕截图 2023-05-23 215541.png">
+                                    </span>
+                                <span>
+                                        <h4>家务支持服务</h4>
+                                        <p>志愿者会主动联系那些需要帮助的婴幼儿家庭，帮助他们清洁卫生、整理物品和准备食物。通过与这些家庭进行交流，志愿者可以了解他们的家庭情况和具体需求，并提供实用的生活技能和指导。同时，志愿者还可以与孩子们玩耍，并帮助照料他们，从而缓解该地区的社会问题，促进社区和睦。</p>
+                                    </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="announcement">
+                        <p>———————公告———————</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

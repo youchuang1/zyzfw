@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大数据可视化</title>
+    <link rel="stylesheet" href="{% static '/dsj/css/index.css' %}">
+    <script src="{% static '/dsj/js/flexible.js' %}"></script>
+    <script src="{% static '/dsj/js/index.js' %}"></script>
+    <script src="{% static '/dsj/js/echarts.min.js' %}"></script>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header>
+        <img src="{% static '/dsj/images/育苗朝阳.png' %}" alt="">
+        <h1>育苗朝阳—大数据可视化管理体系</h1>
+        <div class="showTime"></div>
+    </header>
+
+    <!-- 页面主体 -->
+    <section class="mainbox">
+        <div class="column">
+            <div class="panel bar">
+                <h2>三进-柱形图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel line">
+                <h2>三支队伍-折线图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel pie">
+                <h2>四个体系-饼形图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+        <div class="column">
+            <!-- no -->
+            <div class="no">
+                <div class="no-hd">
+                    <ul>
+                        <li>574</li>
+                        <li>23216</li>
+                        <li>2230</li>
+                    </ul>
+                </div>
+                <div class="no-bd">
+                    <ul>
+                        <li>志愿者参加人数</li>
+                        <li>志愿者服务岗位</li>
+                        <li>志愿者服务时长</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 地图 -->
+                <div class="map">
+                    <div class="map_01"></div>
+                    <div class="map_02"></div>
+                    <div class="map_03"></div>
+                    <div class="chart"></div>
+                </div>
+
+        </div>
+        <div class="column">
+            <div class="panel bar2">
+                <h2>三送-柱形图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel line2">
+                <h2>专业分布-雷达图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+            <div class="panel pie2">
+                <h2>湖南省分部-饼形图</h2>
+                <div class="chart"></div>
+                <div class="panel-footer"></div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -3,6 +3,7 @@ from datetime import datetime  # 导入时间模块
 
 from django.core.paginator import Paginator  # 导入分页模块
 from django.db.models import Q  # 导入查询模块
+from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, JsonResponse  # 导入http响应模块
 from django.shortcuts import get_object_or_404  # 导入404模块
 from django.shortcuts import render  # 导入渲染模块
@@ -88,6 +89,8 @@ class SysView(BaseView):
             return render(request, 'login.html')
         elif module == 'dashboard':
             return render(request, 'dashboard.html')
+        elif module == 'dsj':
+            return render(request, 'dsj.html')
         elif module == 'info':  # 用户信息页面
             return SysView.getInfo(request)
         elif module == 'exit':  # 退出登录
@@ -204,6 +207,8 @@ class VolunteersView(BaseView):
             pass
         elif module == 'page':
             return self.getPageInfo(request)
+        elif module == 'get':
+            return self.gets(request)
         else:
             return self.error()
 
@@ -220,14 +225,23 @@ class VolunteersView(BaseView):
     def getPageInfo(self, request):
         page = request.GET.get('page', 1)
         per_page = request.GET.get('per_page', 10)
-        query = request.GET.get('query')
+        querya = request.GET.get('name', '')  # 搜索关键字(姓名)
+        queryb = request.GET.get('email', '')  # 搜索关键字(邮箱)
+        queryc = request.GET.get('phone', '')  # 搜索关键字(手机号)
+        queryd = request.GET.get('role', '')  # 搜索关键字(用户类型)
+        print(querya, queryb, queryc, queryd)
+        users = User.objects.all()
 
-        if query:
-            users = User.objects.filter(name__icontains=query)
-        else:
-            users = User.objects.all()
+        if querya != '':
+            users = users.filter(name__contains=querya)
+        elif queryb != '':
+            users = users.filter(email__contains=queryb)
+        elif queryc != '':
+            users = users.filter(phone__contains=queryc)
+        elif queryd != '':
+            users = users.filter(role=queryd)
 
-        users = users.order_by('create_time')
+        users = users.order_by('create_time')  # 按照创建时间排序
         paginator = Paginator(users, per_page)
         page_users = paginator.get_page(page)
 
@@ -259,27 +273,53 @@ class VolunteersView(BaseView):
         return SysView.success('添加成功')
 
     def updInfo(self, request):
-        id = request.POST.get('id')
-        user = User.objects.get(id=id)
+        try:
+            id = request.POST.get('id')
+            name = request.POST.get('name')
+            phone = request.POST.get('phone')
+            email = request.POST.get('email')
+            area = request.POST.get('area')
+            school = request.POST.get('school')
+            major = request.POST.get('major')
+            role = request.POST.get('role')
+            score = request.POST.get('score')
+            level = request.POST.get('level')
 
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        # avatar = request.FILES.get('avatar')  # 获取头像
+            user = User.objects.filter(id=id).first()
+            if user:
+                if request.POST.get('password'):
+                    user.password = request.POST.get('password')
+                user.name = name
+                user.phone = phone
+                user.email = email
+                user.area = area
+                user.school = school
+                user.major = major
+                user.role = role
+                user.score = score
+                user.level = level
+                user.save()
 
-        if name:
-            user.name = name
-        if phone:
-            user.phone = phone
-        # if avatar:
-        #     user.avatar = avatar
-
-        user.save()
-        return SysView.success('更新成功')
+                return SysView.success('修改成功')
+            else:
+                return SysView.warn('未找到要更新的用户')
+        except Exception as e:
+            # log the exception for debugging
+            print(str(e))
+            return SysView.warn('修改失败')
 
     def delInfo(self, request):
         id = request.POST.get('id')
         User.objects.filter(id=id).delete()
         return SysView.success('删除成功')
+
+    def gets(self, request):
+        id = request.GET.get('id')
+        try:
+            user = User.objects.get(id=id)
+            return SysView.successData(model_to_dict(user))
+        except User.DoesNotExist:
+            return SysView.warn('用户不存在')
 
 
 '''

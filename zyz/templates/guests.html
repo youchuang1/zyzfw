@@ -57,8 +57,60 @@
                             <form id="editForm">
                                 <!-- 添加一个隐藏的id字段，用于区分是添加还是编辑 -->
                                 <input type="hidden" name="id" id="id">
-                                <!-- 在这里添加其他需要的输入字段 -->
 
+                                <div class="form-group">
+                                    <label for="name">姓名</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone">手机号</label>
+                                    <input type="text" class="form-control" id="phone" name="phone">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">邮箱</label>
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password">密码</label>
+                                    <input type="password" class="form-control" id="password" name="password">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="area">地区</label>
+                                    <input type="text" class="form-control" id="area" name="area">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="school">学校</label>
+                                    <input type="text" class="form-control" id="school" name="school">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="major">专业</label>
+                                    <input type="text" class="form-control" id="major" name="major">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="role">角色</label>
+                                    <select class="form-control" id="role" name="role">
+                                        <option value="0">普通用户</option>
+                                        <option value="1">志愿者</option>
+                                        <option value="2">管理员</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="score">积分</label>
+                                    <input type="number" class="form-control" id="score" name="score">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="level">等级</label>
+                                    <input type="number" class="form-control" id="level" name="level">
+                                </div>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -82,36 +134,45 @@
     var current_page = 1;   // 当前页码
     var per_page = 10; // 每页显示数量
     var current_sort = ""; // 排序字段
-    var current_search = ""; // 搜索关键字
-    var current_type = ""; // 类型
+    var current_role = ""; // 用户类型
+    var current_name = ""; // 用户名
+    var current_email = ""; // 邮箱
+    var current_phone = ""; // 手机号
 
-    function refreshTable(page, per_page, name, type, sort) {
+
+    function refreshTable(page, per_page, name, email, phone, role) {
         $.ajax({
-            url: '/jobs/video/page/',
+            url: '/jobs/volunteers/page/',
             method: 'GET',
             data: {
-                page: page,
-                per_page: per_page,
-                name: name,
-                type: type,
-                sort: sort,
+                page: page, // 页码
+                per_page: per_page, // 每页显示数量
+                name: name, // 用户名
+                email: email, // 邮箱
+                phone: phone, // 手机号
+                role: role // 用户类型
             },
             success: function (response) {
+                console.log(response);
                 // 更新表格
-                var videos = response.data;
-                var videosHtml = '';
-                videos.forEach(function (video) {
-                    videosHtml += '<tr>';
-                    videosHtml += '<td>' + video.id + '</td>';
-                    videosHtml += '<td>' + video.title + '</td>';
-                    videosHtml += '<td>' + video.introduction + '</td>';
-                    videosHtml += '<td>' + video.score + '</td>';
-                    videosHtml += '<td>' + video.create_time + '</td>';
-                    videosHtml += '<td><button type="button" class="btn btn-primary btn-sm">编辑</button><button type="button" class="btn btn-danger btn-sm delete" data-id="' + video.id + '">删除</button></td>';
-                    videosHtml += '</tr>';
-                });
-                $('#videoTable tbody').html(videosHtml);
-
+                var tableHtml = '';
+                for (var i = 0; i < response.data.length; i++) {
+                    var item = response.data[i];
+                    tableHtml += '<tr>' +
+                        '<td>' + item.id + '</td>' +
+                        '<td>' + item.name + '</td>' +
+                        '<td>' + item.phone + '</td>' +
+                        '<td>' + item.email + '</td>' +
+                        '<td>' + (item.role === 0 ? '普通用户' : (item.role === 1 ? '志愿者' : '管理员')) + '</td>' +
+                        '<td>' + item.score + '</td>' +
+                        '<td>' + item.level + '</td>' +
+                        '<td>' +
+                        '<button type="button" class="btn btn-primary btn-sm edit" data-toggle="modal" data-target="#editModal" data-id="' + item.id + '">编辑</button>' +
+                        '<button type="button" class="btn btn-danger btn-sm delete" data-id="' + item.id + '">删除</button>' +
+                        '</td>' +
+                        '</tr>';
+                }
+                $('#videoTable tbody').html(tableHtml);
                 // 更新分页
                 var paginationHtml = '';
                 for (var i = 1; i <= response.pageSize; i++) {
@@ -128,19 +189,28 @@
     // 获取活动信息并填充模态框
     function getVideoInfo(id) {
         $.ajax({
-            url: '/jobs/video/get/',
+            url: '/jobs/volunteers/get/',
             method: 'GET',
             data: {
                 id: id,
             },
             success: function (response) {
-                var video = response.data;
-                $('#id').val(video.id);
-                $('#edit-title').val(video.title); // 填充标题
-                $('#edit-description').val(video.introduction); // 填充简介
-                $('#edit-points').val(video.score); // 填充积分数
-                $('#edit-type').val(video.type); // 填充类型
-
+                console.log(response);
+                if (response.code === 0) {
+                    // 填充模态框
+                    $('#editModal #id').val(response.data.id);
+                    $('#editModal #name').val(response.data.name);
+                    $('#editModal #phone').val(response.data.phone);
+                    $('#editModal #email').val(response.data.email);
+                    $('#editModal #area').val(response.data.area);
+                    $('#editModal #school').val(response.data.school);
+                    $('#editModal #major').val(response.data.major);
+                    $('#editModal #role').val(response.data.role);
+                    $('#editModal #score').val(response.data.score);
+                    $('#editModal #level').val(response.data.level);
+                } else {
+                    alert(response.message);
+                }
             },
             error: function (error) {
                 console.log(error);
@@ -151,26 +221,43 @@
 
     $(document).ready(function () {
         // 初始加载表格
-        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+        refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
 
-        // 搜索框事件
-        $('#searchBox').on('input', function () {
-            current_search = $(this).val();
-            refreshTable(1, per_page, current_search, current_type, current_sort);
+        // 姓名搜索框事件
+        $('#searchBoa').on('input', function () {
+            current_name = $(this).val();
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
         });
 
+        // 邮箱搜索框事件
+        $('#searchBob').on('input', function () {
+            current_email = $(this).val();
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
+        });
+
+        // 手机号搜索框事件
+        $('#searchBoc').on('input', function () {
+            current_phone = $(this).val();
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
+        });
+
+        // 类型选择事件
+        $('#typeBox').on('change', function () {
+            current_role = $(this).val();
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
+        });
         // 分页事件
         $(document).on('click', '#pagination .page-link', function (e) {
             e.preventDefault();
             current_page = parseInt($(this).text());
-            refreshTable(current_page, per_page, current_search, current_type, current_sort);
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
         });
 
         // 删除事件
         $(document).on('click', '.delete', function () {
             var id = $(this).data('id');
             $.ajax({
-                url: '/jobs/video/del/',
+                url: '/jobs/volunteers/del/',
                 method: 'POST',
                 data: {
                     id: id,
@@ -178,54 +265,72 @@
                 success: function (response) {
                     alert(response.msg);
                     if (response.code === 0) {
-                        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+                        refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role);
                     }
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
-        });
-
-        // 类型选择事件
-        $('#typeBox').on('change', function () {
-            current_type = $(this).val();
-            refreshTable(1, per_page, current_search, current_type, current_sort);
         });
 
         // 排序事件
         $(document).on('click', '.sort', function () {
             current_sort = $(this).data('sort-field');
-            refreshTable(current_page, per_page, current_search, current_type, current_sort);
+            refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role, current_sort);
         });
         // 编辑按钮事件
-        $(document).on('click', '.btn-primary', function () {
-            var id = $(this).closest('tr').find('.delete').data('id');
+        $(document).on('click', '.edit', function () {
+            var id = $(this).data('id');
             getVideoInfo(id);
             $('#editModal').modal('show');
         });
 
+
         // 编辑提交事件
         $('#editSubmit').on('click', function () {
-            var formData = new FormData($('#editForm')[0]);
+            var id = $('#editModal #id').val();
+            var name = $('#editModal #name').val();
+            var phone = $('#editModal #phone').val();
+            var email = $('#editModal #email').val();
+            var area = $('#editModal #area').val();
+            var school = $('#editModal #school').val();
+            var major = $('#editModal #major').val();
+            var role = $('#editModal #role').val();
+            var score = $('#editModal #score').val();
+            var level = $('#editModal #level').val();
+
             $.ajax({
-                url: '/jobs/video/upd/',
+                url: '/jobs/volunteers/upd/',
                 method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
+                data: {
+                    id: id,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    area: area,
+                    school: school,
+                    major: major,
+                    role: role,
+                    score: score,
+                    level: level
+                },
                 success: function (response) {
-                    alert(response.msg);
                     if (response.code === 0) {
-                        $('#editModal').modal('hide');
-                        refreshTable(current_page, per_page, current_search, current_type, current_sort);
+                        $('#editModal').modal('hide'); // Hide modal
+                        refreshTable(current_page, per_page, current_name, current_email, current_phone, current_role); // Refresh table
+                    } else {
+                        alert(response.message); // Show server error message
                     }
                 },
                 error: function (error) {
                     console.log(error);
+                    alert("An error occurred. Please try again.");
                 }
             });
         });
+
+
         // 关闭模态框事件
         $('#butstop').on('click', function () {
             $('#editModal').modal('hide');
