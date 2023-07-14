@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',  # 认证中间件
     'django.contrib.messages.middleware.MessageMiddleware',  # 消息中间件
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # 点击劫持中间件
-    'zyz.auth_middleware.AuthMiddleware',  # 自定义认证中间件
+    'zyz.auth_middleware.AuthMiddleware',  # 自定义认证中间件a
 ]
 
 ROOT_URLCONF = 'zyzfw.urls'  # 根路由
