@@ -25,7 +25,7 @@ class User(models.Model):
         verbose_name_plural = verbose_name
 
 """
-活动表
+活动表  0:未开始 1:进行中 2:已结束
 """
 class Activity(models.Model):
     id = models.AutoField(primary_key=True)
